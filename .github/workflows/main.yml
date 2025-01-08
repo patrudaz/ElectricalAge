@@ -27,7 +27,7 @@ jobs:
           ls build/libs
           ls
       - name: Upload JAR artifact
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v4
         with:
           name: ELN_mod
           path: build/libs/*.jar
