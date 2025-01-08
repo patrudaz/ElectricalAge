@@ -22,10 +22,12 @@ jobs:
             --rm \
             -v "$(pwd)":/app \
             electricalage/build:main
+
       - name: Search For Jar File
         run: |
           ls build/libs
           ls
+          
       - name: Upload JAR artifact
         uses: actions/upload-artifact@v4
         with:
