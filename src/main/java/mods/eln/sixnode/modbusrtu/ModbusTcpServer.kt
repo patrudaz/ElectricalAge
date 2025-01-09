@@ -2,7 +2,6 @@ package mods.eln.sixnode.modbusrtu
 
 import mods.eln.Eln
 import mods.eln.misc.Utils
-import net.minecraft.init.Items.string
 import java.io.OutputStream
 import java.net.*
 import java.nio.ByteBuffer
@@ -266,7 +265,6 @@ class ModbusTcpServer(port: Int = 1502) {
 
             // check remaining amount of data and writing coils
             if (inputBuffer.remaining().toByte() >= byteCount) {
-                val bbRemain = inputBuffer.remaining().toByte()
                 // Writing registers...
                 try {
                     var addr  = address
