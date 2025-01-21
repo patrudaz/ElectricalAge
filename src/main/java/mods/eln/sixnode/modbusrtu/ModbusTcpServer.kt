@@ -119,32 +119,44 @@ class ModbusTcpServer(port: Int = 1502) {
             val address = inputBuffer.short
             val quantity = inputBuffer.short
 
+            // Check quantity - Multiple read is not supported in this model
+            if ((quantity < 1) || (quantity > 1)) {
+                 response.put((0x81.toByte())).put(0x03.toByte())
+                 return
+             }
+
             try {
-                // TODO: Support for multiple coils...
-                if (quantity == 1.toShort()) {
-                    val value = slave.getCoil(address.toInt())
-                    response.put(0x01.toByte()).put(1.toByte()).put((if (value) 1 else 0).toByte())
-                    return
-                }
+                // Single Coil
+                val value = slave.getCoil(address.toInt())
+                response.put(0x01.toByte()).put(1.toByte()).put((if (value) 1 else 0).toByte())
+                return
             } catch (e: IllegalAddressException) {
+                response.put((0x81.toByte())).put(0x02.toByte())
+                return
             }
-            response.put((0x81.toByte())).put(0x02.toByte())
+            response.put((0x81.toByte())).put(0x04.toByte())
         }
 
         private fun readDiscreteInputs(slave: IModbusSlave, response: ByteBuffer) {
             val address = inputBuffer.short
             val quantity = inputBuffer.short
 
-            try {
-                // TODO: Support for multiple inputs...
-                if (quantity == 1.toShort()) {
-                    val value = slave.getInput(address.toInt())
-                    response.put(0x02.toByte()).put(1.toByte()).put((if (value) 1 else 0).toByte())
-                    return
-                }
-            } catch (e: IllegalAddressException) {
+            // Check quantity - Multiple read is not supported in this model
+            if ((quantity < 1) || (quantity > 1)) {
+                response.put((0x82.toByte())).put(0x03.toByte())
+                return
             }
-            response.put((0x82.toByte())).put(0x02.toByte())
+
+            try {
+                // Single Discrete Input
+                val value = slave.getInput(address.toInt())
+                response.put(0x02.toByte()).put(1.toByte()).put((if (value) 1 else 0).toByte())
+                return
+            } catch (e: IllegalAddressException) {
+                response.put((0x82.toByte())).put(0x02.toByte())
+                return
+            }
+            response.put((0x82.toByte())).put(0x04.toByte())
         }
 
         private fun readInputRegisters(slave: IModbusSlave, response: ByteBuffer) {
